@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Void Studio 3D</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:sans-serif; }
+
+body {
+  background-color:#111;
+  overflow:hidden;
+  transition: background-color 0.3s linear;
+}
+
+/* Logo inicial con animación de trazo */
+#intro-text {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:500px;
+  height:120px;
+  cursor:pointer;
+  z-index:10;
+}
+
+#intro-text path {
+  stroke:#fff;
+  stroke-width:2;
+  fill:none;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: draw 3s forwards ease-in-out;
+}
+
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Franja superior */
+#menu-bar {
+  position:fixed;
+  top:0;
+  left:0;
+  height:60px;
+  width:100%;
+  background-color:#000;
+  display:flex;
+  align-items:center;
+  padding-left:250px;
+  justify-content:space-between;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity 1s ease;
+  z-index:5;
+}
+
+/* Pestañas de navegación */
+.nav-tab {
+  color:#fff;
+  text-decoration:none;
+  margin-right:30px;
+  font-size:1rem;
+  opacity:0;
+  transition: opacity 0.5s ease, transform 0.3s ease;
+  padding:5px 10px;
+  border-radius:5px;
+  display:inline-block;
+}
+
+.nav-tab:hover {
+  transform: scale(1.3);
+  z-index:10;
+}
+
+/* Menú hamburguesa social */
+#social-menu {
+  position:relative;
+  margin-right:20px;
+}
+
+#social-menu button {
+  background:none;
+  border:none;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  width:25px;
+  height:18px;
+}
+
+#social-menu button span {
+  display:block;
+  height:3px;
+  width:100%;
+  background:#fff;
+  border-radius:2px;
+}
+
+#social-menu .dropdown {
+  display:none;
+  position:absolute;
+  top:25px;
+  right:0;
+  background-color:#111;
+  border-radius:5px;
+  overflow:hidden;
+  flex-direction:column;
+  min-width:150px;
+  z-index:10;
+}
+
+#social-menu .dropdown a {
+  color:#fff;
+  padding:10px;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+#social-menu .dropdown a img {
+  width:20px;
+  height:20px;
+  filter: grayscale(100%);
+  transition: filter 0.3s ease;
+}
+
+#social-menu .dropdown a:hover img {
+  filter: grayscale(0%);
+}
+
+/* Contenido principal */
+#main-content {
+  opacity:0;
+  visibility:hidden;
+  transition:opacity 1s ease;
+}
+
+/* Carrusel */
+#carousel {
+  width:90%;
+  max-width:1200px;
+  height:500px;
+  margin:120px auto 0;
+  position:relative;
+  overflow:hidden;
+  border-radius:10px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+  opacity:0;
+  transform:translateY(-50px);
+  transition: all 1s ease;
+}
+
+.slide {
+  position:absolute;
+  width:100%;
+  height:100%;
+  background-size:cover;
+  background-position:center;
+  opacity:0;
+  transition: opacity 1s ease;
+}
+
+.slide.active { opacity:1; }
+
+.arrow {
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  background-color: rgba(0,0,0,0.5);
+  color:#fff;
+  border:none;
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:1.5rem;
+}
+
+.arrow:hover { background-color: rgba(0,0,0,0.8); }
+.arrow.left { left:15px; }
+.arrow.right { right:15px; }
+
+.dots {
+  position:absolute;
+  bottom:15px;
+  width:100%;
+  text-align:center;
+}
+
+.dot {
+  display:inline-block;
+  width:12px;
+  height:12px;
+  margin:5px;
+  border-radius:50%;
+  background-color:#000;
+  cursor:pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dot.active { background-color:#fff; }
+
+/* Secciones */
+.section {
+  width:80%;
+  max-width:1100px;
+  margin:150px auto;
+  opacity:0;
+  transform:translateY(60px);
+  transition: all 0.8s ease;
+}
+
+.section.visible {
+  opacity:1;
+  transform:translateY(0);
+}
+
+.section h2 {
+  font-size:2rem;
+  margin-bottom:20px;
+}
+
+/* Proyectos */
+.project {
+  display:flex;
+  align-items:center;
+  background-color:#f4f4f4;
+  border-radius:10px;
+  padding:20px;
+  margin-bottom:20px;
+  gap:20px;
+  cursor:pointer;
+  overflow:hidden;
+  position:relative;
+}
+
+.project img {
+  width:180px;
+  height:120px;
+  object-fit:cover;
+  border-radius:10px;
+  transition: transform 0.3s ease;
+}
+
+.project:hover img { transform: scale(1.05); }
+
+.project-info {
+  flex:1;
+}
+
+.project-info h3 { margin-bottom:10px; }
+.project-info p { color:#555; }
+
+/* Contacto */
+#contacto {
+  text-align:center;
+  background-color:#000;
+  color:#fff;
+  padding:80px 20px;
+  border-radius:20px;
+}
+
+#contacto h2 { font-size:2rem; margin-bottom:20px; }
+#contacto p { margin:10px 0; font-size:1rem; }
+#contacto a { color:#fff; text-decoration:none; font-weight:bold; }
+#contacto a:hover { text-decoration:underline; }
+
+</style>
+</head>
+<body>
+
+<!-- Logo inicial como SVG -->
+<svg id="intro-text" viewBox="0 0 600 100">
+  <path d="M10 80 L50 20 L90 80" /> <!-- Aquí reemplazar con paths de cada letra usando un editor SVG -->
+  <path d="M100 80 L140 20 L180 80" />
+  <path d="M190 80 L230 20 L270 80" />
+</svg>
+
+<div id="menu-bar">
+  <div>
+    <a class="nav-tab" href="interiores.html">Diseño de interiores</a>
+    <a class="nav-tab" href="stands.html">Diseño de stands</a>
+    <a class="nav-tab" href="comerciales.html">Espacios comerciales</a>
+    <a class="nav-tab" href="eventos.html">Eventos y activaciones</a>
+    <a class="nav-tab" href="mobiliario.html">Diseño mobiliario</a>
+    <a class="nav-tab" href="automotriz.html">Diseño automotriz</a>
+  </div>
+
+  <!-- Menú social -->
+  <div id="social-menu">
+    <button id="social-btn">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="dropdown">
+      <a href="https://instagram.com/voidstudio3d" target="_blank"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/instagram-new.png"/> Instagram</a>
+      <a href="https://facebook.com" target="_blank"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/facebook-new.png"/> Facebook</a>
+      <a href="https://linkedin.com" target="_blank"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/linkedin.png"/> LinkedIn</a>
+      <a href="https://workana.com" target="_blank"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/workana.png"/> Workana</a>
+    </div>
+  </div>
+</div>
+
+<div id="main-content">
+  <!-- Aquí puedes mantener el resto de tu contenido igual -->
+</div>
+
+<script>
+window.addEventListener('load', () => {
+  const introText = document.getElementById('intro-text');
+  const menu = document.getElementById('menu-bar');
+  const links = menu.querySelectorAll('.nav-tab');
+  const mainContent = document.getElementById('main-content');
+
+  introText.addEventListener('click', () => {
+    document.body.style.overflowY = "auto"; 
+    introText.style.position = 'fixed';
+    introText.style.top = '17px';
+    introText.style.left = '30px';
+    introText.style.transform = 'translate(0,0)';
+    introText.style.width = '150px';
+    introText.style.height = '30px';
+
+    setTimeout(() => {
+      menu.style.opacity = '1';
+      menu.style.visibility = 'visible';
+      mainContent.style.opacity = '1';
+      mainContent.style.visibility = 'visible';
+      links.forEach((link,i)=>{ setTimeout(()=> link.style.opacity='1', i*200); });
+    },500);
+  });
+});
+</script>
+</body>
+</html>
